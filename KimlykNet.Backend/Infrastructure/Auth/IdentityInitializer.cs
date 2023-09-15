@@ -8,6 +8,7 @@ public class IdentityInitializer : BackgroundService, IInitializer
     private readonly IServiceProvider _services;
     private UserManager<ApplicationUser> _userManager;
     private RoleManager<ApplicationRole> _roleManager;
+    private IConfiguration _configuration;
     private ILogger<IdentityInitializer> _logger;
 
     public IdentityInitializer(IServiceProvider services)
@@ -17,18 +18,31 @@ public class IdentityInitializer : BackgroundService, IInitializer
 
     public async Task InitializeAsync(CancellationToken token)
     {
-        var adminRole = await ShouldCreateRole("SuperAdmin", token);
-        var pendingUsersRole = await ShouldCreateRole("PendingUsers", token);
+        var superAdminRole = await ShouldCreateRole("SuperAdmins", token);
+        var adminRole = await ShouldCreateRole("Administrators", token);
+        var usersRole = await ShouldCreateRole("Users", token);
+        await ShouldCreateRole("PendingUsers", token);
+        await ShouldCreateRole("Family", token);
 
         var admin = await ShouldCreateUser("superadmin", "superadmin@kimlyk.net", token);
 
-        if ((adminRole ?? pendingUsersRole) is not null && admin is not null)
+        if (superAdminRole is not null && adminRole is not null && usersRole is not null && admin is not null)
         {
-            await _userManager.AddToRoleAsync(admin, pendingUsersRole.Name);
+            await _userManager.AddToRoleAsync(admin, superAdminRole.Name);
+            await _userManager.AddToRoleAsync(admin, adminRole.Name);
+            await _userManager.AddToRoleAsync(admin, usersRole.Name);
+
+            string newPassword = _configuration.GetValue<string>("Init:Password");
+
+            if (!string.IsNullOrWhiteSpace(newPassword))
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(admin);
+                await _userManager.ResetPasswordAsync(admin, resetToken, newPassword);
+            }
         }
         else
         {
-            _logger.LogError("Idenityt initialization failed, see previous errors");
+            _logger.LogError("Identity initialization failed, see previous errors");
         }
     }
 
@@ -45,7 +59,8 @@ public class IdentityInitializer : BackgroundService, IInitializer
             using var scope = _services.CreateScope();
 
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>(); ;
+            _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+            _configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
             _logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<IdentityInitializer>();
             _logger.LogInformation("IdentityInitializer service started");
 
