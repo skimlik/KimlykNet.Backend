@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33927.249
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KimlykNet.Backend", "KimlykNet.Backend\KimlykNet.Backend.csproj", "{879FE62D-9E29-4052-A1BC-2EB55AB7E109}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Contracts", "KimlykNet.Contracts\KimlykNet.Contracts.csproj", "{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Data.Contracts", "KimlykNet.Data.Contracts\KimlykNet.Data.Contracts.csproj", "{7D3866C1-01E0-4944-8EC5-841958F0F14E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{B1F5021F-AB99-4EBC-AEA1-FACC0B90ADDA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{879FE62D-9E29-4052-A1BC-2EB55AB7E109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{879FE62D-9E29-4052-A1BC-2EB55AB7E109}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{879FE62D-9E29-4052-A1BC-2EB55AB7E109}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{879FE62D-9E29-4052-A1BC-2EB55AB7E109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D3866C1-01E0-4944-8EC5-841958F0F14E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D3866C1-01E0-4944-8EC5-841958F0F14E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D3866C1-01E0-4944-8EC5-841958F0F14E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D3866C1-01E0-4944-8EC5-841958F0F14E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C87FC8D-517D-4739-990A-B421AA5CD70C}
+	EndGlobalSection
+EndGlobal
