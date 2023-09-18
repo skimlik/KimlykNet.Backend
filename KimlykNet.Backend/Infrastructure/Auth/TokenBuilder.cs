@@ -20,7 +20,11 @@ public class TokenBuilder : ITokenBuilder
         _authOptions = authOptions.Value;
     }
 
-    public async Task<SecurityToken> CreateAsync(string email, string password)
+    public async Task<SecurityToken> CreateAsync(
+        string email,
+        string password,
+        string clientId,
+        CancellationToken token = default)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user is null)
@@ -58,7 +62,9 @@ public class TokenBuilder : ITokenBuilder
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.Add(_authOptions.Lifetime),
             Issuer = _authOptions.Issuer,
-            Audience = _authOptions.Audience,
+            Audience = clientId,
+            IssuedAt = DateTime.UtcNow,
+            NotBefore = DateTime.UtcNow,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
         };
 

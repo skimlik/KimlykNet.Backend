@@ -20,7 +20,7 @@ public class LoginController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SecurityToken))]
     public async Task<IActionResult> GenerateTokenAsync([FromBody] TokenGenerationRequest request)
     {
-        var accessToken = await _tokenBuilder.CreateAsync(request.UserEmail, request.Password);
+        var accessToken = await _tokenBuilder.CreateAsync(request.UserEmail, request.Password, request.ClientId);
         if (accessToken?.Token == null)
         {
             return StatusCode(StatusCodes.Status401Unauthorized);

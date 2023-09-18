@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using KimlykNet.Backend.Infrastructure.Configuration.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -37,8 +38,15 @@ internal static class AuthenticationRegistrationExtensions
                     ValidateIssuerSigningKey = true,
 
                     ValidIssuer = settings.Issuer,
-                    ValidAudience = settings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SigningKey))
+                    ValidAudiences = settings.Audiences,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SigningKey)),
+                    IgnoreTrailingSlashWhenValidatingAudience = true,
+                    RequireAudience = true,
+                    RequireExpirationTime = true,
+                    LogValidationExceptions = true,
+
+                    NameClaimType = ClaimTypes.Name,
+                    RoleClaimType = ClaimTypes.Role,
                 };
             });
 

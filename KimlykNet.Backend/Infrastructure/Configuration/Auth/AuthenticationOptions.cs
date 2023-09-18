@@ -6,7 +6,7 @@ public class AuthenticationOptions
 
     public string Issuer { get; set; }
 
-    public string Audience { get; set; }
+    public string[] Audiences { get; set; }
 
     public string SigningKey { get; set; }
 
