@@ -34,6 +34,6 @@ app.UseAuthorization();
 app.UseAuthorization();
 
 app.MapControllers();
-app.Map("/ping", async context => await context.Response.WriteAsync("Pong"));
+app.MapGet("/ping", async context => await context.Response.WriteAsync("Pong"));
 
 app.Run();

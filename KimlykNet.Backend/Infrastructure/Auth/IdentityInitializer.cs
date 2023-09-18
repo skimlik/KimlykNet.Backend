@@ -24,7 +24,15 @@ public class IdentityInitializer : BackgroundService, IInitializer
         await ShouldCreateRole("PendingUsers", token);
         await ShouldCreateRole("Family", token);
 
-        var admin = await ShouldCreateUser("superadmin", "superadmin@kimlyk.net", token);
+        var adminEmail = _configuration.GetValue<string>("Init:AdminEmail");
+        if (string.IsNullOrEmpty(adminEmail))
+        {
+            throw new ApplicationException("Identity initialization configuration error. No email/username for the administartor configured");
+        }
+
+        var adminUserName = _configuration.GetValue<string>("Init:AdminUserName") ?? adminEmail;
+
+        var admin = await ShouldCreateUser(adminUserName, adminEmail, token);
 
         if (superAdminRole is not null && adminRole is not null && usersRole is not null && admin is not null)
         {
