@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using KimlykNet.Backend.Infrastructure.Configuration.Auth;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
