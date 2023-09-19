@@ -1,0 +1,22 @@
+@hostname=localhost
+@port=7066
+@protocol=https
+
+@origin={{protocol}}://{{hostname}}:{{port}}
+
+# Add valid credentials
+@login=
+@pwd=
+
+POST {{protocol}}://{{hostname}}:{{port}}/token
+Content-Type: application/json
+Accept: application/json
+api-version: 1.0
+
+{
+    "userEmail": "{{login}}",
+    "password": "{{pwd}}",
+    "clientId": "https://kimlyknet.dev.local"
+}
+
+###

@@ -5,14 +5,23 @@ VisualStudioVersion = 17.6.33927.249
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KimlykNet.Backend", "KimlykNet.Backend\KimlykNet.Backend.csproj", "{879FE62D-9E29-4052-A1BC-2EB55AB7E109}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Contracts", "KimlykNet.Contracts\KimlykNet.Contracts.csproj", "{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KimlykNet.Contracts", "KimlykNet.Contracts\KimlykNet.Contracts.csproj", "{E4E08CA4-DCD3-4D12-9D66-D225ED8CB9C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Data.Contracts", "KimlykNet.Data.Contracts\KimlykNet.Data.Contracts.csproj", "{7D3866C1-01E0-4944-8EC5-841958F0F14E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KimlykNet.Data.Contracts", "KimlykNet.Data.Contracts\KimlykNet.Data.Contracts.csproj", "{7D3866C1-01E0-4944-8EC5-841958F0F14E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{B1F5021F-AB99-4EBC-AEA1-FACC0B90ADDA}"
 	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		authenticate.http = authenticate.http
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Http", "Http", "{65B40C1A-1DB9-4CC5-880F-4131B7011C88}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Localhost", "Localhost", "{0D73DCEC-E13B-4087-8F0B-D5BC96F99C2F}"
+	ProjectSection(SolutionItems) = preProject
+		authenticate.http = authenticate.http
+		userInfo.http = userInfo.http
 	EndProjectSection
 EndProject
 Global
@@ -36,6 +45,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{65B40C1A-1DB9-4CC5-880F-4131B7011C88} = {B1F5021F-AB99-4EBC-AEA1-FACC0B90ADDA}
+		{0D73DCEC-E13B-4087-8F0B-D5BC96F99C2F} = {65B40C1A-1DB9-4CC5-880F-4131B7011C88}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8C87FC8D-517D-4739-990A-B421AA5CD70C}

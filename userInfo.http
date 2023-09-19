@@ -1,0 +1,16 @@
+@hostname=localhost
+@port=7066
+@protocol=https
+
+@origin={{protocol}}://{{hostname}}:{{port}}
+
+# Add valid credentials
+@token=
+
+GET {{protocol}}://{{hostname}}:{{port}}/userinfo
+Content-Type: application/json
+Accept: application/json
+api-version: 1.0
+Authorization: Bearer {{token}}
+
+###

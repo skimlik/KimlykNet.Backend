@@ -1,17 +1,20 @@
 ﻿using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Contracts.Auth;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KimlykNet.Backend.Controllers;
 
-public class LoginController : ControllerBase
+public class AuthController : ControllerBase
 {
     private readonly ITokenBuilder _tokenBuilder;
+    private readonly IUserContextAccessor _userContextAccessor;
 
-    public LoginController(ITokenBuilder tokenBuilder)
+    public AuthController(ITokenBuilder tokenBuilder, IUserContextAccessor userContextAccessor)
     {
         _tokenBuilder = tokenBuilder;
+        _userContextAccessor = userContextAccessor;
     }
 
     [HttpPost]
@@ -26,5 +29,22 @@ public class LoginController : ControllerBase
             return StatusCode(StatusCodes.Status401Unauthorized);
         }
         return Ok(accessToken);
+    }
+
+    [HttpGet]
+    [Route("userInfo")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserInfo))]
+    [Authorize]
+    public IActionResult GetUserInfo()
+    {
+        var user = _userContextAccessor.GetUserInfo();
+
+        if (user is null)
+        {
+            return BadRequest();
+        }
+
+        return Ok(user);
     }
 }
