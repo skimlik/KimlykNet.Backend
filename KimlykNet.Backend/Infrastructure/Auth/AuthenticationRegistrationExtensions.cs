@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
+
 using KimlykNet.Backend.Infrastructure.Configuration.Auth;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,7 +65,7 @@ internal static class AuthenticationRegistrationExtensions
         var identityConnectionString = configuration.GetConnectionString("IdentityDb");
         services.AddDbContext<IdentityContext>(options =>
         {
-            options.UseSqlServer(identityConnectionString);
+            options.UseNpgsql(identityConnectionString);
         });
 
         services
