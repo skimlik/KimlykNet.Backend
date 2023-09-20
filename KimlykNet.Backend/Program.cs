@@ -22,6 +22,8 @@ builder.Services.AddCustomAuthorization();
 builder.Services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
 
 builder.Services.AddHostedService(services => new IdentityInitializer(services));
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<IdentityContext>();
 
 var app = builder.Build();
 
@@ -40,5 +42,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapGet("/ping", async context => await context.Response.WriteAsync("Pong"));
+app.MapHealthChecks("/healthcheck");
 
 app.Run();
