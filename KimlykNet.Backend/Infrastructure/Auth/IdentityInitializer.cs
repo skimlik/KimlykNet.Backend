@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace KimlykNet.Backend.Infrastructure.Auth;
@@ -18,11 +20,12 @@ public class IdentityInitializer : BackgroundService, IInitializer
 
     public async Task InitializeAsync(CancellationToken token)
     {
-        var superAdminRole = await ShouldCreateRole("SuperAdmins", token);
-        var adminRole = await ShouldCreateRole("Administrators", token);
-        var usersRole = await ShouldCreateRole("Users", token);
-        await ShouldCreateRole("PendingUsers", token);
-        await ShouldCreateRole("Family", token);
+        string[] roles = { "SecurityAdministrators", "Administrators", "PendingUsers", "Users", "Family" };
+
+        foreach (var role in roles)
+        {
+            await TryCreateRole(role);
+        }
 
         var adminEmail = _configuration.GetValue<string>("Init:AdminEmail");
         if (string.IsNullOrEmpty(adminEmail))
@@ -31,26 +34,18 @@ public class IdentityInitializer : BackgroundService, IInitializer
         }
 
         var adminUserName = _configuration.GetValue<string>("Init:AdminUserName") ?? adminEmail;
+        var admin = await TryCreateUserAsync(adminUserName, adminEmail, token);
 
-        var admin = await ShouldCreateUser(adminUserName, adminEmail, token);
+        await TryAssignRoleAsync(admin, "SecurityAdministrators");
+        await TryAssignRoleAsync(admin, "Administrators");
+        await TryAssignRoleAsync(admin, "Users");
 
-        if (superAdminRole is not null && adminRole is not null && usersRole is not null && admin is not null)
+        string newPassword = _configuration.GetValue<string>("Init:Password");
+
+        if (!string.IsNullOrWhiteSpace(newPassword))
         {
-            await _userManager.AddToRoleAsync(admin, superAdminRole.Name);
-            await _userManager.AddToRoleAsync(admin, adminRole.Name);
-            await _userManager.AddToRoleAsync(admin, usersRole.Name);
-
-            string newPassword = _configuration.GetValue<string>("Init:Password");
-
-            if (!string.IsNullOrWhiteSpace(newPassword))
-            {
-                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(admin);
-                await _userManager.ResetPasswordAsync(admin, resetToken, newPassword);
-            }
-        }
-        else
-        {
-            _logger.LogError("Identity initialization failed, see previous errors");
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(admin);
+            await _userManager.ResetPasswordAsync(admin, resetToken, newPassword);
         }
     }
 
@@ -76,7 +71,32 @@ public class IdentityInitializer : BackgroundService, IInitializer
         }
     }
 
-    private async Task<ApplicationUser> ShouldCreateUser(string user, string email, CancellationToken token)
+    private async Task TryAssignRoleAsync(ApplicationUser user, string roleName)
+    {
+        if (await _roleManager.RoleExistsAsync(roleName))
+        {
+            if (await _userManager.IsInRoleAsync(user, roleName))
+            {
+                _logger.LogWarning("User {User} has role {Role} already assigned. Skipping", user.NormalizedUserName, roleName);
+                return;
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+            if (!result.Succeeded)
+            {
+                foreach(var error in result.Errors)
+                {
+                    _logger.LogError("{Code} {Error}", error.Code, error.Description);
+                }
+            }
+
+            return;
+        }
+
+        _logger.LogWarning("Role {Role} does not exist", roleName);
+    }
+
+    private async Task<ApplicationUser> TryCreateUserAsync(string user, string email, CancellationToken token)
     {
         var userExist = await _userManager.Users.AnyAsync(p => p.UserName == user, token);
 
@@ -94,6 +114,7 @@ public class IdentityInitializer : BackgroundService, IInitializer
                 NormalizedEmail = normalizedEmail,
                 NormalizedUserName = normalizedEmail,
                 TwoFactorEnabled = false,
+                Gender = UserGender.Unknown,
                 UserName = user,
             };
 
@@ -105,9 +126,9 @@ public class IdentityInitializer : BackgroundService, IInitializer
         return null;
     }
 
-    private async Task<ApplicationRole> ShouldCreateRole(string role, CancellationToken token)
+    private async Task<ApplicationRole> TryCreateRole(string role)
     {
-        var roleExist = await _roleManager.Roles.AnyAsync(p => p.Name == role, token);
+        var roleExist = await _roleManager.RoleExistsAsync(role);
         if (!roleExist)
         {
             _logger.LogInformation("'{Role}' role does not exist, seeding.", role);
@@ -124,6 +145,7 @@ public class IdentityInitializer : BackgroundService, IInitializer
             LogError(roleResult);
             return newRole;
         }
+
         return null;
     }
 
