@@ -7,7 +7,7 @@
 # Add valid credentials
 @token=
 
-GET {{protocol}}://{{hostname}}:{{port}}/userinfo
+GET {{protocol}}://{{hostname}}:{{port}}/api/userinfo
 Content-Type: application/json
 Accept: application/json
 api-version: 1.0

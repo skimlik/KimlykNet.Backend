@@ -1,7 +1,5 @@
 using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Swagger;
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,13 +17,7 @@ builder.Services.AddSwaggerWithConfiguration();
 builder.Services.AddAspNetIdentity(builder.Configuration);
 
 builder.Services.AddAuthentication(builder.Configuration);
-builder.Services.AddAuthorization(options =>
-{
-    options.DefaultPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-        .Build();
-});
+builder.Services.AddCustomAuthorization();
 
 builder.Services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
 
@@ -43,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

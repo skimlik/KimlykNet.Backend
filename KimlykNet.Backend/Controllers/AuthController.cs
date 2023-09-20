@@ -1,11 +1,12 @@
 ﻿using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Contracts.Auth;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KimlykNet.Backend.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly ITokenBuilder _tokenBuilder;

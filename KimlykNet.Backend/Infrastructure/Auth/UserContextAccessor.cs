@@ -26,11 +26,15 @@ public class UserContextAccessor : IUserContextAccessor
             return null;
         }
 
+        string firstName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.GivenName, ordinalIgnoreCase))?.Value;
+        string lastName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Surname, ordinalIgnoreCase))?.Value;
+
         return new UserInfo
         {
             Name = identity.Name,
             Email = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email, ordinalIgnoreCase))?.Value,
-            FirstName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.GivenName, ordinalIgnoreCase))?.Value
+            FirstName = string.IsNullOrWhiteSpace(firstName) ? null : firstName,
+            LastName = string.IsNullOrWhiteSpace(lastName) ? null : lastName,
         };
     }
 }
