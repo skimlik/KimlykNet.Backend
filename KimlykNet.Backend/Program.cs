@@ -1,7 +1,9 @@
 using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
+var originPolicyName = "_confidentialClientsOrigins";
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true);
 builder.Configuration.AddEnvironmentVariables("DOCKER:");
@@ -26,6 +28,19 @@ builder.Services.AddHostedService(services => new IdentityInitializer(services))
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<IdentityContext>();
 
+var corsPolicy = (CorsPolicyBuilder corsBuilder) => 
+    corsBuilder
+        .WithOrigins("https://kimlyk.net")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy(name: originPolicyName, policy => corsPolicy(policy));
+    opt.AddDefaultPolicy(policy => corsPolicy(policy));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(originPolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
 
