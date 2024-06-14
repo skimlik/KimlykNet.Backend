@@ -1,24 +1,21 @@
 ﻿using System.Security.Claims;
 
-using Microsoft.IdentityModel.JsonWebTokens;
-
 namespace KimlykNet.Backend.Infrastructure.Auth;
 
-public class UserContextAccessor : IUserContextAccessor
+public class UserContextAccessor(IHttpContextAccessor httpContextAccessor) : IUserContextAccessor
 {
-    private const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private const StringComparison OrdinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
 
-    public UserContextAccessor(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
-    public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     public UserInfo GetUserInfo()
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = httpContextAccessor.HttpContext?.User;
+        if (user is null)
+        {
+            return null;
+        }
+
         var identity = user.Identity;
 
         if (!IsAuthenticated)
@@ -26,13 +23,13 @@ public class UserContextAccessor : IUserContextAccessor
             return null;
         }
 
-        string firstName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.GivenName, ordinalIgnoreCase))?.Value;
-        string lastName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Surname, ordinalIgnoreCase))?.Value;
+        string firstName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.GivenName, OrdinalIgnoreCase))?.Value;
+        string lastName = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Surname, OrdinalIgnoreCase))?.Value;
 
         return new UserInfo
         {
-            Name = identity.Name,
-            Email = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email, ordinalIgnoreCase))?.Value,
+            Name = identity?.Name,
+            Email = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email, OrdinalIgnoreCase))?.Value,
             FirstName = string.IsNullOrWhiteSpace(firstName) ? null : firstName,
             LastName = string.IsNullOrWhiteSpace(lastName) ? null : lastName,
         };

@@ -9,16 +9,10 @@ using KimlykNet.Backend.Infrastructure.Configuration.Auth;
 
 namespace KimlykNet.Backend.Infrastructure.Auth;
 
-public class TokenBuilder : ITokenBuilder
+public class TokenBuilder(UserManager<ApplicationUser> userManager, IOptions<AuthenticationOptions> authOptions)
+    : ITokenBuilder
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly AuthenticationOptions _authOptions;
-
-    public TokenBuilder(UserManager<ApplicationUser> userManager, IOptions<AuthenticationOptions> authOptions)
-    {
-        _userManager = userManager;
-        _authOptions = authOptions.Value;
-    }
+    private readonly AuthenticationOptions _authOptions = authOptions.Value;
 
     public async Task<SecurityToken> CreateAsync(
         string email,
@@ -26,13 +20,13 @@ public class TokenBuilder : ITokenBuilder
         string clientId,
         CancellationToken token = default)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await userManager.FindByEmailAsync(email);
         if (user is null)
         {
             return null;
         }
 
-        var access = await _userManager.CheckPasswordAsync(user, password);
+        var access = await userManager.CheckPasswordAsync(user, password);
         if (!access)
         {
             return null;
@@ -40,16 +34,17 @@ public class TokenBuilder : ITokenBuilder
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_authOptions.SigningKey);
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await userManager.GetRolesAsync(user);
 
+        string userName = user.UserName ?? "unknown";
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Sub, user.UserName),
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Sub, userName),
+            new(JwtRegisteredClaimNames.Email, userName),
             new(JwtRegisteredClaimNames.FamilyName, user.LastName ?? string.Empty),
             new(JwtRegisteredClaimNames.GivenName, user.FirstName ?? string.Empty),
-            new(ClaimTypes.Name, user.UserName)
+            new(ClaimTypes.Name, userName)
         };
 
         foreach (var role in roles)

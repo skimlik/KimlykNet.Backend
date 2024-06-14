@@ -7,24 +7,16 @@ namespace KimlykNet.Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController(ITokenBuilder tokenBuilder, IUserContextAccessor userContextAccessor)
+    : ControllerBase
 {
-    private readonly ITokenBuilder _tokenBuilder;
-    private readonly IUserContextAccessor _userContextAccessor;
-
-    public AuthController(ITokenBuilder tokenBuilder, IUserContextAccessor userContextAccessor)
-    {
-        _tokenBuilder = tokenBuilder;
-        _userContextAccessor = userContextAccessor;
-    }
-
     [HttpPost]
     [Route("token")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SecurityToken))]
     public async Task<IActionResult> GenerateTokenAsync([FromBody] TokenGenerationRequest request)
     {
-        var accessToken = await _tokenBuilder.CreateAsync(request.UserEmail, request.Password, request.ClientId);
+        var accessToken = await tokenBuilder.CreateAsync(request.UserEmail, request.Password, request.ClientId);
         if (accessToken?.Token == null)
         {
             return StatusCode(StatusCodes.Status401Unauthorized);
@@ -39,7 +31,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public IActionResult GetUserInfo()
     {
-        var user = _userContextAccessor.GetUserInfo();
+        var user = userContextAccessor.GetUserInfo();
 
         if (user is null)
         {

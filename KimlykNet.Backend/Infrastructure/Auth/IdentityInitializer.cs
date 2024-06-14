@@ -1,26 +1,18 @@
-﻿using System.Security.Claims;
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace KimlykNet.Backend.Infrastructure.Auth;
 
-public class IdentityInitializer : BackgroundService, IInitializer
+public class IdentityInitializer(IServiceProvider services) : BackgroundService, IInitializer
 {
-    private readonly IServiceProvider _services;
     private UserManager<ApplicationUser> _userManager;
     private RoleManager<ApplicationRole> _roleManager;
     private IConfiguration _configuration;
     private ILogger<IdentityInitializer> _logger;
 
-    public IdentityInitializer(IServiceProvider services)
-    {
-        _services = services;
-    }
-
     public async Task InitializeAsync(CancellationToken token)
     {
-        string[] roles = { "SecurityAdministrators", "Administrators", "PendingUsers", "Users", "Family" };
+        string[] roles = ["SecurityAdministrators", "Administrators", "PendingUsers", "Users", "Family"];
 
         foreach (var role in roles)
         {
@@ -30,22 +22,26 @@ public class IdentityInitializer : BackgroundService, IInitializer
         var adminEmail = _configuration.GetValue<string>("Init:AdminEmail");
         if (string.IsNullOrEmpty(adminEmail))
         {
-            throw new ApplicationException("Identity initialization configuration error. No email/username for the administartor configured");
+            throw new ApplicationException(
+                "Identity initialization configuration error. No email/username for the administrator configured");
         }
 
         var adminUserName = _configuration.GetValue<string>("Init:AdminUserName") ?? adminEmail;
         var admin = await TryCreateUserAsync(adminUserName, adminEmail, token);
 
-        await TryAssignRoleAsync(admin, "SecurityAdministrators");
-        await TryAssignRoleAsync(admin, "Administrators");
-        await TryAssignRoleAsync(admin, "Users");
-
-        string newPassword = _configuration.GetValue<string>("Init:Password");
-
-        if (!string.IsNullOrWhiteSpace(newPassword))
+        if (admin is not null)
         {
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(admin);
-            await _userManager.ResetPasswordAsync(admin, resetToken, newPassword);
+            await TryAssignRoleAsync(admin, "SecurityAdministrators");
+            await TryAssignRoleAsync(admin, "Administrators");
+            await TryAssignRoleAsync(admin, "Users");
+
+            string newPassword = _configuration.GetValue<string>("Init:Password");
+
+            if (!string.IsNullOrWhiteSpace(newPassword))
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(admin);
+                await _userManager.ResetPasswordAsync(admin, resetToken, newPassword);
+            }   
         }
     }
 
@@ -59,7 +55,7 @@ public class IdentityInitializer : BackgroundService, IInitializer
     {
         if (!stoppingToken.IsCancellationRequested)
         {
-            using var scope = _services.CreateScope();
+            using var scope = services.CreateScope();
 
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
@@ -138,6 +134,7 @@ public class IdentityInitializer : BackgroundService, IInitializer
                 Id = Guid.NewGuid().ToString(),
                 Name = role,
                 NormalizedName = role,
+                ConcurrencyStamp = Guid.NewGuid().ToString()
             };
 
             var roleResult = await _roleManager.CreateAsync(newRole);
