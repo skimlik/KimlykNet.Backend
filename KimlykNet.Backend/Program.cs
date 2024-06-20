@@ -1,9 +1,11 @@
 using KimlykNet.Backend.Infrastructure.Auth;
+using KimlykNet.Backend.Infrastructure.Configuration;
 using KimlykNet.Backend.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 
-var originPolicyName = "_confidentialClientsOrigins";
+using CorsMiddleware = KimlykNet.Backend.Infrastructure.Configuration.CorsMiddleware;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true);
 builder.Configuration.AddEnvironmentVariables("DOCKER:");
@@ -13,6 +15,9 @@ builder.Configuration.AddEnvironmentVariables("DOCKER:");
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IUserContextAccessor, UserContextAccessor>();
 builder.Services.AddControllers();
+
+builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection(CorsSettings.SectionName));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerWithConfiguration();
@@ -28,17 +33,11 @@ builder.Services.AddHostedService(services => new IdentityInitializer(services))
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<IdentityContext>();
 
-var corsPolicy = (CorsPolicyBuilder corsBuilder) => 
-    corsBuilder
-        .WithOrigins("https://kimlyk.net")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-
 builder.Services.AddCors(opt =>
 {
-    opt.AddPolicy(name: originPolicyName, policy => corsPolicy(policy));
-    opt.AddDefaultPolicy(policy => corsPolicy(policy));
+    var config = builder.Configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>();
+    opt.AddPolicy(name: config.PolicyName , policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
+    opt.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
 });
 
 var app = builder.Build();
@@ -51,12 +50,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(originPolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors();
+app.UseMiddleware<CorsMiddleware>();
 app.MapControllers();
 app.MapGet("/ping", async context => await context.Response.WriteAsync("Pong"));
 app.MapHealthChecks("/healthcheck");
-
 app.Run();
