@@ -5,6 +5,8 @@
 
 appsettings.local.json
 efbundle
+appdbbundle
+identitydbbundle
 .idea
 .vs
 

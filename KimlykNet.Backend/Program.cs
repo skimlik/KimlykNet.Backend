@@ -1,8 +1,11 @@
 using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Configuration;
+using KimlykNet.Backend.Infrastructure.Database;
 using KimlykNet.Backend.Infrastructure.Swagger;
+using KimlykNet.Data;
+
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Extensions.Caching.Memory;
 
 using CorsMiddleware = KimlykNet.Backend.Infrastructure.Configuration.CorsMiddleware;
 
@@ -30,8 +33,11 @@ builder.Services.AddCustomAuthorization();
 builder.Services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
 
 builder.Services.AddHostedService(services => new IdentityInitializer(services));
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
+builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<IdentityContext>();
+    .AddDbContextCheck<IdentityContext>()
+    .AddDbContextCheck<DataContext>();
 
 builder.Services.AddCors(opt =>
 {
@@ -56,5 +62,9 @@ app.UseCors();
 app.UseMiddleware<CorsMiddleware>();
 app.MapControllers();
 app.MapGet("/ping", async context => await context.Response.WriteAsync("Pong"));
+app.MapGet("/.well-known/acme-challenge", () =>
+{
+
+});
 app.MapHealthChecks("/healthcheck");
 app.Run();

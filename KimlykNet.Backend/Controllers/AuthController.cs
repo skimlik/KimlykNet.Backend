@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KimlykNet.Backend.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController(ITokenBuilder tokenBuilder, IUserContextAccessor userContextAccessor)
     : ControllerBase
 {

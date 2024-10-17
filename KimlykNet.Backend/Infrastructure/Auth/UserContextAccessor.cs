@@ -6,7 +6,7 @@ public class UserContextAccessor(IHttpContextAccessor httpContextAccessor) : IUs
 {
     private const StringComparison OrdinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
 
-    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
     public UserInfo GetUserInfo()
     {

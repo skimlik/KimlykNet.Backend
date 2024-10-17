@@ -36,7 +36,7 @@ public class TokenBuilder(UserManager<ApplicationUser> userManager, IOptions<Aut
         var key = Encoding.UTF8.GetBytes(_authOptions.SigningKey);
         var roles = await userManager.GetRolesAsync(user);
 
-        string userName = user.UserName ?? "unknown";
+        string userName = user.UserName ?? user.Email ?? "unknown";
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

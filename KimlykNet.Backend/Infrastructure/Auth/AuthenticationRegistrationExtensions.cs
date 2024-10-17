@@ -65,7 +65,7 @@ internal static class AuthenticationRegistrationExtensions
         var identityConnectionString = configuration.GetConnectionString("IdentityDb");
         services.AddDbContext<IdentityContext>(options =>
         {
-            options.UseNpgsql(identityConnectionString);
+            options.UseNpgsql(identityConnectionString, b => b.MigrationsAssembly("KimlykNet.Backend"));
         });
 
         services
