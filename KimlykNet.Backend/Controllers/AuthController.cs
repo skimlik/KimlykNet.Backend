@@ -18,15 +18,15 @@ public class AuthController(INotificator notificator, ITokenBuilder tokenBuilder
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SecurityToken))]
     public async Task<IActionResult> GenerateTokenAsync([FromBody] TokenGenerationRequest request)
     {
-        notificator.NotifyAsync($"Authorization request received: {request.UserEmail}");
+        await notificator.NotifyAsync($"Authorization request received: {request.UserEmail}");
         var accessToken = await tokenBuilder.CreateAsync(request.UserEmail, request.Password, request.ClientId);
         if (accessToken?.Token == null)
         {
-            notificator.NotifyAsync($"Authorization request failure for: {request.UserEmail}");
+            await notificator.NotifyAsync($"Authorization rejected: {request.UserEmail}");
             return StatusCode(StatusCodes.Status401Unauthorized);
         }
 
-        notificator.NotifyAsync($"Token issued for {request.UserEmail}");
+        await notificator.NotifyAsync($"Token issued for {request.UserEmail}");
         return Ok(accessToken);
     }
 

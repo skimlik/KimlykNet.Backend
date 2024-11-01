@@ -5,6 +5,6 @@ namespace KimlykNet.Services.Abstractions.Clients
 {
     public interface INotificationClient
     {
-        Task SendNotificationAsync(string body, CancellationToken cancellationToken = default);
+        Task<bool> SendNotificationAsync(string body, CancellationToken cancellationToken = default);
     }
 }

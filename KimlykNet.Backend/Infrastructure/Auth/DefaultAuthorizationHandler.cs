@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace KimlykNet.Backend.Infrastructure.Auth;
 
-public class DefaultAuthorizationHandler(INotificator notificator) : AuthorizationHandler<IAuthorizationRequirement>
+public class DefaultAuthorizationHandler : AuthorizationHandler<IAuthorizationRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IAuthorizationRequirement requirement)
     {
@@ -14,14 +14,12 @@ public class DefaultAuthorizationHandler(INotificator notificator) : Authorizati
         var identity = user.Identity as ClaimsIdentity;
         if (identity?.IsAuthenticated ?? false)
         {
-            notificator.NotifyAsync($"User authenticated: {identity.Name}");
             return requirement switch
             {
                 _ => AuthorizeAsync(context, requirement)
             };
         }
 
-        notificator.NotifyAsync($"Authorization failed: {requirement}");
         return AccessDeniedAsync(context);
     }
 

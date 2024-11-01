@@ -16,9 +16,7 @@ public class NotificationClient(
     ILogger<NotificationClient> logger)
     : INotificationClient
 {
-    private readonly ILogger<NotificationClient> _logger = logger;
-
-    public async Task SendNotificationAsync(string body, CancellationToken cancellationToken = default)
+    public async Task<bool> SendNotificationAsync(string body, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Serialize(new { text = body }, serializerOptions);
         var uri = $"{settings.Value.WebHookUri}&payload={payload}";
@@ -26,6 +24,11 @@ public class NotificationClient(
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
         requestMessage.Content = new StringContent(payload, Encoding.UTF8, "application/json");
         var response = await httpClient.SendAsync(requestMessage, cancellationToken);
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogError("Error sending notification");
+        }
+        return response.IsSuccessStatusCode;
     }
 }
