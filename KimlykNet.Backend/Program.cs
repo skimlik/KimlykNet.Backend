@@ -1,8 +1,15 @@
+using System.Text.Json;
+
 using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Configuration;
 using KimlykNet.Backend.Infrastructure.Database;
 using KimlykNet.Backend.Infrastructure.Swagger;
 using KimlykNet.Data;
+using KimlykNet.Services;
+using KimlykNet.Services.Abstractions.Clients;
+using KimlykNet.Services.Abstractions.Configuration;
+using KimlykNet.Services.Abstractions.Services;
+using KimlykNet.Services.Clients;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,10 +22,13 @@ builder.Configuration.AddEnvironmentVariables("DOCKER:");
 
 // Add services to the container.
 
+builder.Services.AddSingleton(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IUserContextAccessor, UserContextAccessor>();
 builder.Services.AddControllers();
 
+builder.Services.Configure<NotificationsSettings>(builder.Configuration.GetSection(NotificationsSettings.SectionName));
 builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection(CorsSettings.SectionName));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -45,6 +55,9 @@ builder.Services.AddCors(opt =>
     opt.AddPolicy(name: config.PolicyName , policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
     opt.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
 });
+
+builder.Services.AddHttpClient<INotificationClient, NotificationClient>();
+builder.Services.AddTransient<INotificator, NotificationService>();
 
 var app = builder.Build();
 

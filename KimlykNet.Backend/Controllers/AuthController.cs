@@ -1,5 +1,7 @@
 ﻿using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Contracts.Auth;
+using KimlykNet.Services.Abstractions.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +9,7 @@ namespace KimlykNet.Backend.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(ITokenBuilder tokenBuilder, IUserContextAccessor userContextAccessor)
+public class AuthController(INotificator notificator, ITokenBuilder tokenBuilder, IUserContextAccessor userContextAccessor)
     : ControllerBase
 {
     [HttpPost]
@@ -16,11 +18,15 @@ public class AuthController(ITokenBuilder tokenBuilder, IUserContextAccessor use
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SecurityToken))]
     public async Task<IActionResult> GenerateTokenAsync([FromBody] TokenGenerationRequest request)
     {
+        notificator.NotifyAsync($"Authorization request received: {request.UserEmail}");
         var accessToken = await tokenBuilder.CreateAsync(request.UserEmail, request.Password, request.ClientId);
         if (accessToken?.Token == null)
         {
+            notificator.NotifyAsync($"Authorization request failure for: {request.UserEmail}");
             return StatusCode(StatusCodes.Status401Unauthorized);
         }
+
+        notificator.NotifyAsync($"Token issued for {request.UserEmail}");
         return Ok(accessToken);
     }
 

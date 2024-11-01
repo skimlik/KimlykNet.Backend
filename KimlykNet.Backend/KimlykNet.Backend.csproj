@@ -24,5 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\KimlykNet.Contracts\KimlykNet.Contracts.csproj" />
     <ProjectReference Include="..\KimlykNet.Data\KimlykNet.Data.csproj" />
+    <ProjectReference Include="..\KimlykNet.Services.Abstractions\KimlykNet.Services.Abstractions.csproj" />
+    <ProjectReference Include="..\KimlykNet.Services\KimlykNet.Services.csproj" />
   </ItemGroup>
 </Project>

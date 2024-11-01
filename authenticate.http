@@ -1,6 +1,6 @@
 @hostname=localhost
-@port=7066
-@protocol=https
+@port=5078
+@protocol=http
 
 @origin={{protocol}}://{{hostname}}:{{port}}
 
@@ -8,7 +8,7 @@
 @login=
 @pwd=
 
-POST {{protocol}}://{{hostname}}:{{port}}/api/token
+POST {{origin}}/api/auth/token
 Content-Type: application/json
 Accept: application/json
 api-version: 1.0

@@ -28,6 +28,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Data", "KimlykNet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Data.Abstractions", "KimlykNet.Data.Abstractions\KimlykNet.Data.Abstractions.csproj", "{3A8656E1-A874-4B2B-A1AA-3F4A35168AEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Services", "KimlykNet.Services\KimlykNet.Services.csproj", "{77D0579D-CE24-4331-AD9E-5FADE4377B3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KimlykNet.Services.Abstractions", "KimlykNet.Services.Abstractions\KimlykNet.Services.Abstractions.csproj", "{EFC44FAA-6BF6-40E4-9CF5-F5DF7383C19B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +54,14 @@ Global
 		{3A8656E1-A874-4B2B-A1AA-3F4A35168AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A8656E1-A874-4B2B-A1AA-3F4A35168AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A8656E1-A874-4B2B-A1AA-3F4A35168AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77D0579D-CE24-4331-AD9E-5FADE4377B3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77D0579D-CE24-4331-AD9E-5FADE4377B3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77D0579D-CE24-4331-AD9E-5FADE4377B3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77D0579D-CE24-4331-AD9E-5FADE4377B3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFC44FAA-6BF6-40E4-9CF5-F5DF7383C19B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC44FAA-6BF6-40E4-9CF5-F5DF7383C19B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC44FAA-6BF6-40E4-9CF5-F5DF7383C19B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC44FAA-6BF6-40E4-9CF5-F5DF7383C19B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
