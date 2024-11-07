@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Threading.Channels;
 
+using KimlykNet.Backend.Background;
 using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Configuration;
 using KimlykNet.Backend.Infrastructure.Database;
@@ -58,6 +60,16 @@ builder.Services.AddCors(opt =>
 
 builder.Services.AddHttpClient<INotificationClient, NotificationClient>();
 builder.Services.AddTransient<INotificator, NotificationService>();
+
+var channelOptions = new BoundedChannelOptions(1000)
+{
+    SingleWriter = false,
+    SingleReader = true,
+    FullMode = BoundedChannelFullMode.Wait
+};
+builder.Services.AddSingleton(Channel.CreateBounded<ApplicationNotification>(channelOptions));
+builder.Services.AddSingleton<NotificationChannel>();
+builder.Services.AddHostedService<NotificationChannelConsumer>();
 
 var app = builder.Build();
 

@@ -3,6 +3,7 @@ using System.Text.Json;
 
 using KimlykNet.Services.Abstractions.Clients;
 using KimlykNet.Services.Abstractions.Configuration;
+using KimlykNet.Services.Abstractions.Services;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,19 +17,28 @@ public class NotificationClient(
     ILogger<NotificationClient> logger)
     : INotificationClient
 {
-    public async Task<bool> SendNotificationAsync(string body, CancellationToken cancellationToken = default)
+    public async Task<bool> SendNotificationAsync(ApplicationNotification body, CancellationToken cancellationToken = default)
     {
-        var payload = JsonSerializer.Serialize(new { text = body }, serializerOptions);
-        var uri = $"{settings.Value.WebHookUri}&payload={payload}";
-
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
-        requestMessage.Content = new StringContent(payload, Encoding.UTF8, "application/json");
-        var response = await httpClient.SendAsync(requestMessage, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            logger.LogError("Error sending notification");
+            var payload = JsonSerializer.Serialize(body, serializerOptions);
+            var uri = $"{settings.Value.WebHookUri}&payload={payload}";
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
+            requestMessage.Content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var response = await httpClient.SendAsync(requestMessage, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogError("Error sending notification");
+            }
+
+            return response.IsSuccessStatusCode;
         }
-        return response.IsSuccessStatusCode;
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error sending notification");
+            return false;
+        }
     }
 }
