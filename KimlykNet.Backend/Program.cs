@@ -30,8 +30,8 @@ builder.Configuration.AddEnvironmentVariables("DOCKER:");
 builder.Services.AddCors(opt =>
 {
     var config = builder.Configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>();
-    opt.AddPolicy(name: config.PolicyName , policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
-    opt.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
+    opt.AddPolicy(name: config.PolicyName , policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins).WithExposedHeaders("Location"));
+    opt.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins).WithExposedHeaders("Location"));
 });
 
 // Add services to the container.
