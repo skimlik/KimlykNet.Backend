@@ -6,7 +6,9 @@ using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Configuration;
 using KimlykNet.Backend.Infrastructure.Database;
 using KimlykNet.Backend.Infrastructure.Swagger;
+using KimlykNet.Contracts;
 using KimlykNet.Data;
+using KimlykNet.Data.Abstractions;
 using KimlykNet.Services;
 using KimlykNet.Services.Abstractions.Clients;
 using KimlykNet.Services.Abstractions.Configuration;
@@ -32,6 +34,7 @@ builder.Services.AddControllers();
 
 builder.Services.Configure<NotificationsSettings>(builder.Configuration.GetSection(NotificationsSettings.SectionName));
 builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection(CorsSettings.SectionName));
+builder.Services.Configure<EncoderOptions>(builder.Configuration.GetSection(EncoderOptions.SectionName));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -60,6 +63,7 @@ builder.Services.AddCors(opt =>
 
 builder.Services.AddHttpClient<INotificationClient, NotificationClient>();
 builder.Services.AddTransient<INotificator, NotificationService>();
+builder.Services.AddSingleton<IIdEncoder, IdEncoder>();
 
 var channelOptions = new BoundedChannelOptions(1000)
 {

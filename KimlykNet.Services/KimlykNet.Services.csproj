@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\KimlykNet.Contracts\KimlykNet.Contracts.csproj" />
+      <ProjectReference Include="..\KimlykNet.Data.Abstractions\KimlykNet.Data.Abstractions.csproj" />
       <ProjectReference Include="..\KimlykNet.Services.Abstractions\KimlykNet.Services.Abstractions.csproj" />
     </ItemGroup>
 
