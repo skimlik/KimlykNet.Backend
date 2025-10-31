@@ -32,7 +32,7 @@ internal sealed class SecretMessageRepository(DataContext context) : ISecretMess
         string currentUser,
         CancellationToken cancellationToken = default)
     {
-        var secret = await context.SecretMessages.SingleOrDefaultAsync(s => s.Id == id, cancellationToken);
+        var secret = await context.SecretMessages.SingleOrDefaultAsync(s => s.Id == id && s.ReceivedOn == null, cancellationToken);
         if (secret is null)
         {
             return null;

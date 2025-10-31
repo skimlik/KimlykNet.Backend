@@ -9,10 +9,8 @@ namespace KimlykNet.Backend.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableCors]
-public class GuidController(ILogger<GuidController> logger) : ControllerBase
+public class GuidController() : ControllerBase
 {
-    private readonly ILogger<GuidController> _logger = logger;
-
     [HttpGet(Name = "GetNewGuid")]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "Produces new GUID")]

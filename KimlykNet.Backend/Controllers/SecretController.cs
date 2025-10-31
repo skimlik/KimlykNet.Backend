@@ -12,8 +12,7 @@ namespace KimlykNet.Backend.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [EnableCors]
-[Authorize]
-public class SecretController(IIdEncoder encoder, ISecretMessageRepository repository, IUserContextAccessor userContextAccessor) : Base64Controller
+public class SecretController(IIdEncoder encoder, ISecretMessageRepository repository, IUserContextAccessor userContextAccessor) : ControllerBase
 {
     [HttpGet("{messageId}", Name = "GetSecretAction")]
     public async Task<IActionResult> GetAsync([FromRoute] string messageId, CancellationToken cancellationToken)
@@ -41,8 +40,9 @@ public class SecretController(IIdEncoder encoder, ISecretMessageRepository repos
     public async Task<IActionResult> CreateAsync([FromBody] CreateSecretModel model, CancellationToken cancellationToken)
     {
         var userInfo = userContextAccessor.GetUserInfo();
-        var messageId = await repository.CreateSecretAsync(model.Value, userInfo?.Email, cancellationToken);
-        return CreatedAtAction("GetSecretAction", new { messageId }, messageId);
+        var secretId = await repository.CreateSecretAsync(model.Value, userInfo?.Email, cancellationToken);
+        var messageId = encoder.Encode(secretId.ToString());
+        return CreatedAtRoute("GetSecretAction", new { messageId }, messageId);
     }
 }
 
