@@ -15,13 +15,15 @@ public class DataProtectionController(IIdEncoder encoder) : ControllerBase
     [HttpPost("encode")]
     public IActionResult Encode([FromBody]ProtectedValue secretValue)
     {
-        return Ok(encoder.Encode(secretValue.Value));
+        string encode = encoder.Encode(secretValue.Value);
+        return Ok(new ProtectedValue {  Value = encode });
     }
     
     [HttpPost("decode")]
     public IActionResult Decode([FromBody]ProtectedValue secretValue)
     {
-        return Ok(encoder.Decode(secretValue.Value));
+        string decode = encoder.Decode(secretValue.Value);
+        return Ok(new ProtectedValue { Value = decode});
     }
 
     public class ProtectedValue

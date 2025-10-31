@@ -24,6 +24,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true);
 builder.Configuration.AddEnvironmentVariables("DOCKER:");
 
+builder.Services.AddCors(opt =>
+{
+    var config = builder.Configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>();
+    opt.AddPolicy(name: config.PolicyName , policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
+    opt.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
+});
+
 // Add services to the container.
 
 builder.Services.AddSingleton(new JsonSerializerOptions(JsonSerializerDefaults.Web));
@@ -54,13 +61,6 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<IdentityContext>()
     .AddDbContextCheck<DataContext>();
 
-builder.Services.AddCors(opt =>
-{
-    var config = builder.Configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>();
-    opt.AddPolicy(name: config.PolicyName , policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
-    opt.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.AllowedOrigins));
-});
-
 builder.Services.AddHttpClient<INotificationClient, NotificationClient>();
 builder.Services.AddTransient<INotificator, NotificationService>();
 builder.Services.AddSingleton<IIdEncoder, IdEncoder>();
@@ -85,10 +85,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors();
-app.UseMiddleware<CorsMiddleware>();
 app.MapControllers();
 app.MapGet("/ping", async context => await context.Response.WriteAsync("Pong"));
 app.MapGet("/.well-known/acme-challenge", () =>
