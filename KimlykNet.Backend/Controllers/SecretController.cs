@@ -17,6 +17,11 @@ public class SecretController(IIdEncoder encoder, ISecretMessageRepository repos
     [HttpGet("{messageId}", Name = "GetSecretAction")]
     public async Task<IActionResult> GetAsync([FromRoute] string messageId, CancellationToken cancellationToken)
     {
+        Response.Headers.Append("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+        Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate, private");
+        Response.Headers.Append("Pragma", "no-cache");
+        Response.Headers.Append("Expires", "0");
+        
         var id = encoder.Decode(messageId);
         if (Guid.TryParse(id, out var guid))
         {
@@ -26,6 +31,7 @@ public class SecretController(IIdEncoder encoder, ISecretMessageRepository repos
             {
                 return NotFound();
             }
+            
             return Ok(
                 new
                 {
