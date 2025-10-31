@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 
+using KimlykNet.Contracts.Auth;
+
 namespace KimlykNet.Backend.Infrastructure.Auth;
 
 public class UserContextAccessor(IHttpContextAccessor httpContextAccessor) : IUserContextAccessor

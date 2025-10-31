@@ -7,8 +7,11 @@ using KimlykNet.Backend.Infrastructure.Configuration;
 using KimlykNet.Backend.Infrastructure.Database;
 using KimlykNet.Backend.Infrastructure.Swagger;
 using KimlykNet.Contracts;
+using KimlykNet.Contracts.Auth;
 using KimlykNet.Data;
 using KimlykNet.Data.Abstractions;
+using KimlykNet.Data.Abstractions.Repositories;
+using KimlykNet.Data.Repositories;
 using KimlykNet.Services;
 using KimlykNet.Services.Abstractions.Clients;
 using KimlykNet.Services.Abstractions.Configuration;
@@ -64,6 +67,8 @@ builder.Services.AddHealthChecks()
 builder.Services.AddHttpClient<INotificationClient, NotificationClient>();
 builder.Services.AddTransient<INotificator, NotificationService>();
 builder.Services.AddSingleton<IIdEncoder, IdEncoder>();
+
+builder.Services.AddScoped<ISecretMessageRepository, SecretMessageRepository>();
 
 var channelOptions = new BoundedChannelOptions(1000)
 {

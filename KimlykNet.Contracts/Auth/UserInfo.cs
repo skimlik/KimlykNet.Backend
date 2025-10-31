@@ -1,4 +1,4 @@
-﻿namespace KimlykNet.Backend.Infrastructure.Auth;
+﻿namespace KimlykNet.Contracts.Auth;
 
 public class UserInfo
 {

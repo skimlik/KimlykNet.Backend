@@ -6,6 +6,8 @@ using KimlykNet.Services.Abstractions.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using IUserContextAccessor = KimlykNet.Contracts.Auth.IUserContextAccessor;
+
 namespace KimlykNet.Backend.Controllers;
 
 [ApiController]

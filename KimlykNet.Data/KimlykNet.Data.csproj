@@ -16,6 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\KimlykNet.Contracts\KimlykNet.Contracts.csproj" />
       <ProjectReference Include="..\KimlykNet.Data.Abstractions\KimlykNet.Data.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="LINQPadQuery" />
+        <InternalsVisibleTo Include="KimlykNet.Backend" />
     </ItemGroup>
 </Project>
