@@ -45,10 +45,9 @@ internal sealed class SecretMessageRepository(DataContext context) : ISecretMess
                 return null;
             }
         }
-        
-        secret.ReceivedOn = DateTimeOffset.UtcNow;
-        secret.ReceivedBy = currentUser;
-        context.Entry(secret).State = EntityState.Modified;
+
+        context.SecretMessages.Remove(secret);
+        context.Entry(secret).State = EntityState.Deleted;
         await context.SaveChangesAsync(cancellationToken);
         return secret;
     }
