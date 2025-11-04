@@ -24,7 +24,10 @@ public class UserNotesController(
     {
         var user = contextAccessor.GetUserInfo()?.Email;
         var created = await notesRepository.CreateAsync(user, note.Title, note.Text, note.IsPublic, cancellationToken);
-        return CreatedAtRoute("UserNotesController_GetUserNoteAsync", new { noteId = idEncoder.Encode(created.Id.ToString()) }, created);
+        return CreatedAtRoute(
+            "UserNotesController_GetUserNoteAsync",
+            new { noteId = idEncoder.Encode(created.Id.ToString()) },
+            FromEntity(created));
     }
 
     [HttpGet("{noteId}", Name = "UserNotesController_GetUserNoteAsync")]
@@ -37,7 +40,7 @@ public class UserNotesController(
         }
 
         var data = await GetEntityAsync(id, cancellationToken);
-        return data is null ? NotFound() : Ok(data);
+        return data is null ? NotFound() : Ok(FromEntity(data));
     }
 
     [HttpPut("{noteId}/share")]
@@ -61,7 +64,7 @@ public class UserNotesController(
         }
 
         var shared = await notesRepository.ShareAsync(id, true, cancellationToken);
-        return Ok(shared);
+        return Ok(FromEntity(shared));
     }
 
     private async Task<UserNote> GetEntityAsync(int id, CancellationToken cancellationToken)
@@ -78,5 +81,18 @@ public class UserNotesController(
         }
 
         return data?.IsPublic ?? false ? data : null;
+    }
+    
+    private UserNoteModel FromEntity(UserNote note)
+    {
+        return new UserNoteModel
+        {
+            NoteId = idEncoder.Encode(note.Id.ToString()),
+            Title = note.Title,
+            Text = note.Note,
+            IsPublic = note.IsPublic,
+            CreatedDate = note.DateCreated,
+            ModifiedDate = note.DateModified
+        };
     }
 }
