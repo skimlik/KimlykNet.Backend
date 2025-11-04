@@ -22,6 +22,18 @@ public class IdEncoder(IOptions<EncoderOptions> encoderOptions) : IIdEncoder
             .TrimEnd('=');
     }
 
+    public string? SafeDecode(string secretValue)
+    {
+        try
+        {
+            return Decode(secretValue);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public string Decode(string secretValue)
     {
         // 1. Convert URL-safe Base64 back to standard Base64

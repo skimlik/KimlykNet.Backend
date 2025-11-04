@@ -1,6 +1,9 @@
 using System.Text.Json;
 using System.Threading.Channels;
 
+using FluentValidation;
+using FluentValidation.AspNetCore;
+
 using KimlykNet.Backend.Background;
 using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Backend.Infrastructure.Configuration;
@@ -21,8 +24,6 @@ using KimlykNet.Services.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Memory;
 
-using CorsMiddleware = KimlykNet.Backend.Infrastructure.Configuration.CorsMiddleware;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true);
 builder.Configuration.AddEnvironmentVariables("DOCKER:");
@@ -41,6 +42,10 @@ builder.Services.AddSingleton(new JsonSerializerOptions(JsonSerializerDefaults.W
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IUserContextAccessor, UserContextAccessor>();
 builder.Services.AddControllers();
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 builder.Services.Configure<NotificationsSettings>(builder.Configuration.GetSection(NotificationsSettings.SectionName));
 builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection(CorsSettings.SectionName));
@@ -69,6 +74,7 @@ builder.Services.AddTransient<INotificator, NotificationService>();
 builder.Services.AddSingleton<IIdEncoder, IdEncoder>();
 
 builder.Services.AddScoped<ISecretMessageRepository, SecretMessageRepository>();
+builder.Services.AddScoped<IUserNotesRepository, UserNotesRepository>();
 
 var channelOptions = new BoundedChannelOptions(1000)
 {

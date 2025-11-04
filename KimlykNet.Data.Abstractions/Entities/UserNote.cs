@@ -4,11 +4,11 @@ public class UserNote
 {
     public int Id { get; set; }
 
-    public Guid UserId { get; set; }
-
-    public Guid NoteId { get; set; }
+    public string User { get; set; }
 
     public string Note { get; set; }
+    
+    public string Title { get; set; }
 
     public bool IsPublic { get; set; }
 

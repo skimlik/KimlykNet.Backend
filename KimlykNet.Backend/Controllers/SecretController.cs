@@ -1,9 +1,6 @@
-using KimlykNet.Backend.Infrastructure.Auth;
 using KimlykNet.Contracts.Auth;
 using KimlykNet.Data.Abstractions;
 using KimlykNet.Data.Abstractions.Repositories;
-
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 

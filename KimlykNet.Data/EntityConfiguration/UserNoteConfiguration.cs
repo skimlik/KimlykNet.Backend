@@ -13,12 +13,12 @@ internal class UserNoteConfiguration : IEntityTypeConfiguration<UserNote>
 
         builder.HasKey(k => k.Id);
         builder.Property(e => e.Id).HasColumnName("id").IsRequired().UseIdentityByDefaultColumn();
-        builder.Property(e => e.UserId).HasColumnName("user_id").IsRequired();
-        builder.Property(e => e.NoteId).HasColumnName("note_id").IsRequired();
+        builder.Property(e => e.User).HasColumnName("user").IsRequired().HasMaxLength(256);
+        builder.Property(e => e.Title).HasColumnName("title").IsRequired().HasMaxLength(256);
         builder.Property(e => e.Note).HasColumnName("note").HasMaxLength(4096);
         builder.Property(e => e.DateCreated).HasColumnName("created_at").IsRequired().HasDefaultValue(DateTimeOffset.UtcNow);
         builder.Property(e => e.DateModified).HasColumnName("updated_at").HasDefaultValue(DateTimeOffset.UtcNow);
 
-        builder.HasIndex(i => i.UserId);
+        builder.HasIndex(i => i.DateCreated);
     }
 }
