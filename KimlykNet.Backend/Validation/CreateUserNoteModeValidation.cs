@@ -7,7 +7,7 @@ public class CreateUserNoteModeValidation : AbstractValidator<CreateUserNoteMode
 {
     public CreateUserNoteModeValidation()
     {
-        RuleFor(m => m.Text).NotEmpty().MaximumLength(256);
-        RuleFor(m => m.Title).MaximumLength(4096);
+        RuleFor(m => m.Text).NotEmpty().MaximumLength(4096);
+        RuleFor(m => m.Title).MaximumLength(256);
     }
 }
