@@ -29,6 +29,20 @@ public class UserNotesController(
             new { noteId = idEncoder.Encode(created.Id.ToString()) },
             FromEntity(created));
     }
+    
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetUserNotesAsync(
+        CancellationToken cancellationToken,
+        [FromQuery] int page = 0,
+        [FromQuery] int pageSize = 100)
+    {
+        var user = contextAccessor.GetUserInfo()?.Email;
+        
+        var notes = await notesRepository.GetAllAsync(user, pageSize, page, cancellationToken);
+        var result = notes.Select(FromEntity);
+        return Ok(result);
+    }
 
     [HttpGet("{noteId}", Name = "UserNotesController_GetUserNoteAsync")]
     public async Task<IActionResult> GetUserNoteAsync([FromRoute] string noteId, CancellationToken cancellationToken)
@@ -41,6 +55,49 @@ public class UserNotesController(
 
         var data = await GetEntityAsync(id, cancellationToken);
         return data is null ? NotFound() : Ok(FromEntity(data));
+    }
+
+    [HttpDelete("{noteId}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteUserNoteAsync([FromRoute] string noteId, CancellationToken cancellationToken)
+    {
+        var id = int.TryParse(idEncoder.SafeDecode(noteId), out var val) ? val : 0;
+        if (id == 0)
+        {
+            return BadRequest("Invalid id");
+        }
+
+        var data = await GetEntityAsync(id, cancellationToken);
+        if (data is null)
+        {
+            return NotFound();
+        }
+        
+        await notesRepository.DeleteAsync(data.Id, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("{noteId}")]
+    public async Task<IActionResult> UpdateUserNoteAsync(
+        [FromRoute] string noteId,
+        [FromBody] CreateUserNoteModel note,
+        CancellationToken cancellationToken)
+    {
+        var id = int.TryParse(idEncoder.SafeDecode(noteId), out var val) ? val : 0;
+        if (id == 0)
+        {
+            return BadRequest("Invalid id");
+        }
+
+        var data = await GetEntityAsync(id, cancellationToken);
+        if (data is null)
+        {
+            return NotFound();
+        }
+        
+        await notesRepository.UpdateAsync(id, note.Title, note.Text, cancellationToken);
+        var shared = await notesRepository.ShareAsync(id, note.IsPublic, cancellationToken);
+        return Ok(FromEntity(shared));
     }
 
     [HttpPut("{noteId}/share")]
